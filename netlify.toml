@@ -1,9 +1,8 @@
-# Brahma Evo is a Windows desktop application: the root requirements.txt is a
-# Windows-only dependency list (win10toast/pypiwin32, pycaw, pywinauto,
-# comtypes, pyaudio, ...) that cannot be installed on Netlify's Linux build
-# image. Netlify scans the base directory for dependency-management files, so
-# pointing the build at assets/ (which contains none) prevents any pip install.
-# The site publishes the static WebGL showcase directly.
+# The web version of Brahma Evo lives in webapp/: a static front end that
+# replicates the Windows app's interface, plus Netlify Functions (AI chat)
+# and a Netlify Database schema. Dependency files only exist here, so the
+# Python requirements.txt at the repository root (a Windows-only desktop
+# dependency list) is never scanned or installed by Netlify's Linux image.
 [build]
-  base = "assets"
-  publish = "web_background"
+  base = "webapp"
+  publish = "public"
