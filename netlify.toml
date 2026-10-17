@@ -1,0 +1,8 @@
+# The web version of Brahma Evo lives in webapp/: a static front end that
+# replicates the Windows app's interface, plus Netlify Functions (AI chat)
+# and a Netlify Database schema. Dependency files only exist here, so the
+# Python requirements.txt at the repository root (a Windows-only desktop
+# dependency list) is never scanned or installed by Netlify's Linux image.
+[build]
+  base = "webapp"
+  publish = "public"

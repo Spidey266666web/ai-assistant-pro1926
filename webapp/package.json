@@ -1,0 +1,16 @@
+{
+  "name": "brahma-evo-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Brahma Evo AI Assistant — web core",
+  "dependencies": {
+    "@google/genai": "^2.30.0",
+    "@netlify/database": "^2.0.1",
+    "drizzle-orm": "beta"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^6.0.2",
+    "drizzle-kit": "beta"
+  }
+}

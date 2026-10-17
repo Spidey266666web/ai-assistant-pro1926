@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brahma Evo — Web Core</title>
+  <meta name="description" content="Brahma Evo AI Assistant — web core interface">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-state="ONLINE">
+
+  <!-- Quantum Core Resonator — the same reactive WebGL core the desktop app renders behind its UI.
+       Rendered directly in this page (no iframe) so it can never be blanked by auth or embedding quirks. -->
+  <div id="webgl-canvas" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- ═══ TASKBAR ═══ -->
+    <header id="taskbar">
+      <div id="statusBadge" class="status-badge st-online"><span class="dot">●</span><span id="statusText">ONLINE</span></div>
+      <nav id="nav">
+        <button class="nav-pill" data-page="dashboard">Dashboard</button>
+        <button class="nav-pill active" data-page="chat">Chat</button>
+        <button class="nav-pill" data-page="settings">Settings</button>
+      </nav>
+      <div id="clock"><span id="clockTime">--:--:--</span><span id="clockDate"></span></div>
+    </header>
+
+    <div id="body">
+
+      <!-- ═══ CENTER STAGE ═══ -->
+      <main id="center">
+
+        <!-- CHAT STAGE -->
+        <section id="page-chat" class="page active">
+
+          <div class="wings-row">
+            <!-- Left wing: last command + telemetry -->
+            <div class="wing" id="wingCommand">
+              <div class="wing-head">
+                <span class="hud-tag">◈ [COMMAND]</span>
+                <span class="wing-tool-tag">RESULT</span>
+              </div>
+              <div class="wing-title" id="wingCmdTitle">STANDING BY</div>
+              <div class="wing-step-box">
+                <div class="wing-step-hdr"><span class="hud-tag dim">LAST DIRECTIVE</span></div>
+                <div class="wing-step-text" id="wingCmdText">No command issued this session. The core is resonating and ready.</div>
+              </div>
+              <div class="wing-metrics">
+                <div class="metric" id="metricLatency">
+                  <span class="metric-label">LATENCY</span><span class="metric-value">--</span>
+                  <span class="metric-bar"><span class="metric-fill" style="width:0%"></span></span>
+                </div>
+                <div class="metric" id="metricMessages">
+                  <span class="metric-label">MSGS</span><span class="metric-value">0</span>
+                  <span class="metric-bar"><span class="metric-fill" style="width:0%"></span></span>
+                </div>
+                <div class="metric" id="metricSession">
+                  <span class="metric-label">SESSION</span><span class="metric-value">0m</span>
+                  <span class="metric-bar"><span class="metric-fill" style="width:0%"></span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right wing: live operations (appears while the core works) -->
+            <div class="wing ops" id="wingOps" hidden>
+              <div class="wing-head">
+                <span class="hud-tag">⚡ [OPERATIONS]</span>
+                <span class="wing-tool-tag">TELEMETRY</span>
+                <span class="wing-spacer"></span>
+                <button class="wing-btn" id="opsPin" title="Pin card (prevent auto-dismiss)">◉</button>
+                <button class="wing-btn" id="opsClose" title="Dismiss">✕</button>
+              </div>
+              <div class="wing-title" id="opsTitle">LIVE TASK EXECUTION</div>
+              <div class="wing-step-box">
+                <div class="wing-step-hdr"><span class="ops-pulse">◉</span><span class="hud-tag dim">ACTIVE STEP</span></div>
+                <div class="wing-step-text" id="opsStep">Initializing operation...</div>
+              </div>
+              <div class="wing-sources">
+                <div class="hud-tag dim sources-hdr">LIVE SOURCES &amp; CHANNELS</div>
+                <div id="opsSources"></div>
+              </div>
+              <div class="wing-spacer"></div>
+              <div class="fuse-row">
+                <span class="hud-tag dim" id="fuseLabel">10s</span>
+                <span class="fuse-bar"><span class="fuse-fill" id="fuseFill"></span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-core">
+            <div class="core-tag hud-tag dim">QUANTUM CORE RESONATOR</div>
+          </div>
+
+          <form id="commandBar" autocomplete="off">
+            <input id="cmdInput" type="text" placeholder="Ask Brahma Evo anything..." maxlength="8000">
+            <button type="button" class="bar-btn" id="cmdMic" title="Voice input">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 19v3"/></svg>
+            </button>
+            <button type="submit" class="bar-btn accent" id="cmdSend" title="Transmit">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M13 6l6 6-6 6"/></svg>
+            </button>
+          </form>
+        </section>
+
+        <!-- DASHBOARD -->
+        <section id="page-dashboard" class="page">
+          <div class="bento">
+            <div class="bento-card" id="weatherCard">
+              <div class="card-tag">ATMOSPHERE &amp; WEATHER</div>
+              <div class="weather-row">
+                <div class="weather-temp" id="weatherTemp">--°C</div>
+                <div class="weather-side"><span id="weatherCond">Awaiting uplink</span><span id="weatherCity">Local Station</span></div>
+              </div>
+              <div class="card-meta" id="weatherMeta">Humidity: --% • Wind: -- km/h</div>
+            </div>
+
+            <div class="bento-card">
+              <div class="card-tag">CALENDAR &amp; SCHEDULE</div>
+              <div class="cal-head" id="calHead">—</div>
+              <div class="cal-grid" id="calGrid"></div>
+            </div>
+
+            <div class="bento-card">
+              <div class="card-tag">CORE STATUS</div>
+              <div class="core-grid">
+                <div class="core-cell"><span class="k">STATE</span><span class="v" id="dashState">ONLINE</span></div>
+                <div class="core-cell"><span class="k">ENGINE</span><span class="v">gemini-3.5-flash</span></div>
+                <div class="core-cell"><span class="k">RUNTIME</span><span class="v">Web Core 1.0.0</span></div>
+                <div class="core-cell"><span class="k">UPTIME</span><span class="v" id="dashUptime">0m</span></div>
+              </div>
+            </div>
+
+            <div class="bento-card">
+              <div class="card-tag">QUICK DIRECTIVES</div>
+              <div class="quick-grid">
+                <button class="quick-btn" data-prompt="Plan a focused 6-hour workday for me with breaks.">Plan my day</button>
+                <button class="quick-btn" data-prompt="Draft a short professional email requesting a project deadline extension.">Draft an email</button>
+                <button class="quick-btn" data-prompt="Explain quantum entanglement like I am twelve.">Explain simply</button>
+                <button class="quick-btn" data-prompt="Kuch acche Hinglish me startup ideas do niche AI tools ke liye.">Hinglish ideas</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section id="page-settings" class="page">
+          <div class="settings-wrap">
+            <div class="bento-card settings-card">
+              <div class="card-tag">APPEARANCE — CORE THEME</div>
+              <p class="settings-desc">The desktop app renders every panel from a single accent. Pick a resonance color; borders, glows and the orb follow it.</p>
+              <div class="swatch-row" id="swatchRow">
+                <button class="swatch" data-theme="#ffffff" title="Ice White (default)"><span class="sw-chip" style="background:#ffffff"></span><span>Ice White</span></button>
+                <button class="swatch" data-theme="#00e5ff" title="Ice"><span class="sw-chip" style="background:#00e5ff"></span><span>Ice</span></button>
+                <button class="swatch" data-theme="#007aff" title="Blue"><span class="sw-chip" style="background:#007aff"></span><span>Blue</span></button>
+                <button class="swatch" data-theme="#37ff5f" title="Green"><span class="sw-chip" style="background:#37ff5f"></span><span>Green</span></button>
+                <button class="swatch" data-theme="#ff3b30" title="Red"><span class="sw-chip" style="background:#ff3b30"></span><span>Red</span></button>
+              </div>
+              <div class="custom-theme-row">
+                <input id="customHex" type="text" placeholder="#a78bfa" maxlength="7" spellcheck="false">
+                <button id="applyHex" class="bar-btn accent small">Apply</button>
+              </div>
+            </div>
+
+            <div class="bento-card settings-card">
+              <div class="card-tag">SYSTEM — WEB CORE</div>
+              <div class="core-grid">
+                <div class="core-cell"><span class="k">PRODUCT</span><span class="v">Brahma Evo</span></div>
+                <div class="core-cell"><span class="k">VERSION</span><span class="v">1.0.0</span></div>
+                <div class="core-cell"><span class="k">REASONING ENGINE</span><span class="v">Gemini 3.5 Flash</span></div>
+                <div class="core-cell"><span class="k">INTERFACE</span><span class="v">Web Core (this page)</span></div>
+              </div>
+              <p class="settings-desc">The web core converses, reasons and plans. Desktop-level control — launching apps, steering the PC, smart home routing — runs in the Windows app, where the same brain is wired to your machine's senses.</p>
+            </div>
+
+            <div class="bento-card settings-card">
+              <div class="card-tag">ABOUT</div>
+              <p class="settings-desc">Brahma Evo is an autonomous, self-evolving cognitive engine. This page mirrors the desktop interface: the same quantum core resonator, the same HUD language, the same directness — reachable from any browser.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ═══ RIGHT PANEL — BRAHMA CHAT ═══ -->
+      <aside id="rightPanel">
+        <div class="rp-head">
+          <span class="rp-pulse">●</span>
+          <span class="rp-title">BRAHMA CHAT</span>
+          <span class="wing-spacer"></span>
+          <button id="newChatBtn" title="Start a new chat session">+ New</button>
+          <button id="collapseBtn" title="Collapse Chat Sidebar">❯</button>
+        </div>
+
+        <div class="rp-tabs">
+          <button class="rp-tab active" data-tab="chat">CHAT</button>
+          <button class="rp-tab" data-tab="history">HISTORY</button>
+        </div>
+
+        <div class="rp-stack">
+          <div id="tabChat" class="rp-page active">
+            <div class="task-card" id="taskCard">
+              <div class="tc-row"><span class="tc-head">CORE</span><span class="tc-val" id="tcState">ONLINE</span></div>
+              <div class="tc-row"><span class="tc-head">ENGINE</span><span class="tc-val">gemini-3.5-flash</span></div>
+              <div class="tc-row"><span class="tc-head">LAST OP</span><span class="tc-val" id="tcLastOp">idle</span></div>
+            </div>
+
+            <div id="feed" aria-live="polite"></div>
+
+            <form id="inlineForm" autocomplete="off">
+              <button type="button" class="row-btn" id="attachBtn" title="Attach a text file or image">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.5 12.6 20.9a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
+              </button>
+              <input id="inlineInput" type="text" placeholder="Ask Brahma Evo anything..." maxlength="8000">
+              <button type="button" class="row-btn" id="micBtn" title="Voice input">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 19v3"/></svg>
+              </button>
+              <button type="submit" class="row-btn accent" id="sendBtn" title="Transmit">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h13M13 6l6 6-6 6"/></svg>
+              </button>
+            </form>
+            <div class="rp-footer"><span class="dot">●</span> <span id="rpFooterText">Core Online · gemini-3.5-flash</span></div>
+          </div>
+
+          <div id="tabHistory" class="rp-page">
+            <input id="historySearch" type="text" placeholder="Search conversations..." autocomplete="off">
+            <div id="historyList"></div>
+          </div>
+        </div>
+      </aside>
+
+      <button id="reopenBtn" title="Open Chat Sidebar" hidden>❮</button>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".txt,.md,.json,.csv,.log,image/*" hidden>
+
+  <!-- Orb engine: the exact vendor scripts + scene the desktop app ships -->
+  <script src="orb/three.min.js"></script>
+  <script src="orb/OrbitControls.js"></script>
+  <script src="orb/EffectComposer.js"></script>
+  <script src="orb/RenderPass.js"></script>
+  <script src="orb/ShaderPass.js"></script>
+  <script src="orb/CopyShader.js"></script>
+  <script src="orb/LuminosityHighPassShader.js"></script>
+  <script src="orb/UnrealBloomPass.js"></script>
+  <script src="orb-scene.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
