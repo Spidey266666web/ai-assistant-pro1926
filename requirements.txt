@@ -1,3 +1,7 @@
+# Windows-only packages carry an environment marker so this file also
+# installs cleanly on Linux/CI (e.g. Netlify's build image). The app code
+# imports these lazily inside guarded blocks, so their absence on other
+# platforms is handled gracefully.
 sounddevice
 google-genai
 google-generativeai
@@ -6,24 +10,23 @@ requests
 python-kasa
 beautifulsoup4
 duckduckgo-search
-playwright          
+playwright
 pyautogui
 pyperclip
-pygetwindow       
+pygetwindow
 opencv-python
 numpy
 mediapipe
 mss
-Pillow
 psutil
-comtypes
-pycaw               
+comtypes ; sys_platform == "win32"
+pycaw ; sys_platform == "win32"
 instagrapi
-win10toast          
+win10toast ; sys_platform == "win32"
 send2trash
 youtube-transcript-api
-pywinauto
-pyaudio
+pywinauto ; sys_platform == "win32"
+pyaudio ; sys_platform == "win32"
 openpyxl
 python-pptx
 python-docx
