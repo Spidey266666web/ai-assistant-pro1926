@@ -9,7 +9,6 @@
 const $ = (sel) => document.querySelector(sel);
 
 /* ── Elements ─────────────────────────────────────────────────────── */
-const orbFrame = $("#orb");
 const statusBadge = $("#statusBadge");
 const statusText = $("#statusText");
 const feed = $("#feed");
@@ -30,15 +29,14 @@ let pendingImage = null;
 const sessionStart = Date.now();
 
 /* ═══════════════════════════════════════════════════════════════════
-   ORB CONTROL — same-origin iframe exposes setBrahmaState /
-   setPointerNorm, exactly like the desktop BackgroundWidget.
+   ORB CONTROL — orb-scene.js exposes setBrahmaState / setPointerNorm /
+   setPageCamera as window globals (same bridge API the desktop uses).
    ═══════════════════════════════════════════════════════════════════ */
 function orbCall(fn, ...args) {
   try {
-    const w = orbFrame.contentWindow;
-    if (w && typeof w[fn] === "function") w[fn](...args);
+    if (typeof window[fn] === "function") window[fn](...args);
   } catch {
-    /* orb not booted yet */
+    /* orb scene not booted yet */
   }
 }
 
@@ -60,10 +58,8 @@ function setState(state) {
   orbCall("setBrahmaState", state);
 }
 
-/* Pointer tilt, like the desktop's mouse-tracked background */
-window.addEventListener("mousemove", (e) => {
-  orbCall("setPointerNorm", e.clientX / window.innerWidth, e.clientY / window.innerHeight);
-});
+/* Pointer tilt: orb-scene.js listens for pointermove on the page itself,
+   so the core follows the cursor exactly like the desktop background. */
 
 /* ═══════════════════════════════════════════════════════════════════
    STATE MACHINE
@@ -719,6 +715,10 @@ $("#applyHex").addEventListener("click", () => {
   renderCalendar();
   tickMetrics();
   rpFooterText.textContent = `Core Online · ${ENGINE}`;
-  orbFrame.addEventListener("load", () => setState("ONLINE"));
-  setTimeout(() => setState("ONLINE"), 600);
+  if (typeof window.setBrahmaState === "function") {
+    setState("ONLINE");
+  } else {
+    // Scene engine missing (WebGL blocked?) — retry once; static glow stays as fallback
+    setTimeout(() => setState("ONLINE"), 800);
+  }
 })();

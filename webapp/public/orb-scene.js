@@ -1,49 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Quantum Core Resonator</title>
-  <!-- Three.js + PostProcessing (UnrealBloomPass) + OrbitControls (Local Offline) -->
-  <script src="three.min.js"></script>
-  <script src="OrbitControls.js"></script>
-  <script src="EffectComposer.js"></script>
-  <script src="RenderPass.js"></script>
-  <script src="ShaderPass.js"></script>
-  <script src="CopyShader.js"></script>
-  <script src="LuminosityHighPassShader.js"></script>
-  <script src="UnrealBloomPass.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #020306;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    #webgl-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-  </style>
-</head>
-<body>
-  <div id="webgl-canvas"></div>
-
-  <script>
     // HARDCODED CONSTANTS FROM ORIGINAL background.html:
     // Wave Lobes: 4 | Wave Undulation Height: 0.75 | Core Vortex Speed: 0.7 | Bloom: 0.75
     const LOBES = 4;
@@ -915,6 +869,3 @@
       document.addEventListener("DOMContentLoaded", boot);
       window.addEventListener("load", boot);
     }
-  </script>
-</body>
-</html>

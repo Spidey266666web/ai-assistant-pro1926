@@ -13,8 +13,9 @@
 </head>
 <body data-state="ONLINE">
 
-  <!-- Quantum Core Resonator — the same reactive WebGL core the desktop app renders behind its UI -->
-  <iframe id="orb" src="orb/index.html" title="Brahma Quantum Core Resonator" tabindex="-1"></iframe>
+  <!-- Quantum Core Resonator — the same reactive WebGL core the desktop app renders behind its UI.
+       Rendered directly in this page (no iframe) so it can never be blanked by auth or embedding quirks. -->
+  <div id="webgl-canvas" aria-hidden="true"></div>
 
   <div id="app">
 
@@ -236,6 +237,17 @@
   </div>
 
   <input type="file" id="fileInput" accept=".txt,.md,.json,.csv,.log,image/*" hidden>
+
+  <!-- Orb engine: the exact vendor scripts + scene the desktop app ships -->
+  <script src="orb/three.min.js"></script>
+  <script src="orb/OrbitControls.js"></script>
+  <script src="orb/EffectComposer.js"></script>
+  <script src="orb/RenderPass.js"></script>
+  <script src="orb/ShaderPass.js"></script>
+  <script src="orb/CopyShader.js"></script>
+  <script src="orb/LuminosityHighPassShader.js"></script>
+  <script src="orb/UnrealBloomPass.js"></script>
+  <script src="orb-scene.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
